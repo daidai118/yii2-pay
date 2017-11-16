@@ -1,5 +1,5 @@
 {
-    "name": "tlanyan/yii2-pay",
+    "name": "daidai118/yii2-pay",
     "description": "Pay solution for Yii2, support Wxpay and Alipay",
     "type": "library",
     "require": {

@@ -106,6 +106,39 @@ class Alipay extends Object
         Yii::info($response, $this->logCategory);
         return $response;
     }
+    public function getPageParameter(string $orderId, string $subject, string $amount, string $body, string $timeoutExpress = '30m')
+    {
+        $aop = new AopClient();
+
+        $aop->gatewayUrl = $this->gatewayUrl;
+        $aop->appId = $this->appid;
+        if ($this->merchantRsaPrivateKeyFile) {
+            $aop->rsaPrivateKeyFilePath = $this->merchantRsaPrivateKeyFile;
+        } else {
+            $aop->rsaPrivateKey = $this->merchantRsaPrivateKey;
+        }
+        $aop->format = $this->format;
+        $aop->postCharset = $this->charset;
+        $aop->signType = $this->signType;
+        $aop->alipayrsaPublicKey = $this->alipayRsaPublicKey;
+
+        $request = new AlipayTradeAppPayRequest();
+        $bizContent = [
+            'subject' => $subject,
+            'out_trade_no' => $orderId,
+            'body' => $body,
+            'timeout_express' => $timeoutExpress,
+            'total_amount' => $amount,
+            'product_code' => self::PRODUCT_CODE,
+        ];
+        $request->setNotifyUrl($this->notifyUrl);
+        $request->setBizContent(json_encode($bizContent));
+        //这里和普通的接口调用不同，使用的是sdkExecute
+        $response = $aop->pageExecute($request);
+
+        Yii::info($response, $this->logCategory);
+        return $response;
+    }
 
     /**
      * check the sign of callback data

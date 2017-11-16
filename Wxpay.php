@@ -50,7 +50,7 @@ class Wxpay extends Object
      * @var string $tradeType
      * @return array
      */
-    public function getPayParameter(int $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
+    public function getPayParameter(string $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
     {
         $postData = [
             'appid' => $this->appid,
