@@ -3,7 +3,7 @@
  * ALIPAY API: ssdata.dataservice.risk.alixiaohao.query request
  *
  * @author auto create
- * @since 1.0, 2017-03-21 10:28:22
+ * @since 1.0, 2017-07-26 14:38:27
  */
 class SsdataDataserviceRiskAlixiaohaoQueryRequest
 {

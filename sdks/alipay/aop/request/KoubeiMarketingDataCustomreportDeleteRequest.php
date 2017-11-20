@@ -3,7 +3,7 @@
  * ALIPAY API: koubei.marketing.data.customreport.delete request
  *
  * @author auto create
- * @since 1.0, 2016-08-29 14:52:26
+ * @since 1.0, 2017-07-26 11:32:10
  */
 class KoubeiMarketingDataCustomreportDeleteRequest
 {

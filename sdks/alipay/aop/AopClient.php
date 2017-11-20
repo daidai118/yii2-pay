@@ -304,16 +304,39 @@ class AopClient {
 		foreach ($params as &$value) {
 			$value = $this->characet($value, $params['charset']);
 		}
-		
+        echo $this->http_build_query2($params);
+		echo "\r\n";
 		return http_build_query($params);
 	}
-
-	/*
-		页面提交执行方法
-		@param：跳转类接口的request; $httpmethod 提交方式。两个值可选：post、get
-		@return：构建好的、签名后的最终跳转URL（GET）或String形式的form（POST）
-		auther:笙默
-	*/
+    function http_build_query2($queryData, $numericPrefix = '', $argSeparator = '&', $keyPrefix = '') {
+        $arr = array();
+        foreach ($queryData as $key => $val) {
+            if ($val === NULL) {
+                continue;
+            }
+            if (!is_array($val) && !is_object($val)) {
+                if (is_bool($val)) {
+                    $val = $val ? 1 : 0;
+                }
+                if ($keyPrefix === '') {
+                    if (is_int($key)) {
+                        $arr[] = $numericPrefix . ($key) . '=' . ($val);
+                    } else {
+                        $arr[] = ($key) . '=' . ($val);
+                    }
+                } else {
+                    $arr[] = ($keyPrefix . '[' . $key . ']') . '=' . ($val);
+                }
+            }
+        }
+        return implode($argSeparator, $arr);
+    }
+    /*
+        页面提交执行方法
+        @param：跳转类接口的request; $httpmethod 提交方式。两个值可选：post、get
+        @return：构建好的、签名后的最终跳转URL（GET）或String形式的form（POST）
+        auther:笙默
+    */
 	public function pageExecute($request,$httpmethod = "POST") {
 
 		$this->setupCharsets($request);
