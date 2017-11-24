@@ -50,7 +50,7 @@ class Wxpay extends Object
      * @var string $tradeType
      * @return array
      */
-    public function getPayParameter(string $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
+    public function getPayParameter(int $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
     {
         $postData = [
             'appid' => $this->appid,
@@ -77,23 +77,81 @@ class Wxpay extends Object
         if ($response->isOk) {
             $data = $response->data;
             Yii::info($data, $this->logCategory);
+            print_r($data);exit;
             if ($data['return_code'] === 'SUCCESS') {
-            	if ($data['result_code'] === 'SUCCESS') {
-            		return [
-            			'code' => 0,
-			            'prepayid' => $data['prepay_id'],
-		            ];
-	            }
-	            return [
-	            	'code' => 1,
-		            'message' => $data['err_code_des'],
-	            ];
+                if ($data['result_code'] === 'SUCCESS') {
+                    return [
+                        'code' => 0,
+                        $data,
+                    ];
+                }
+                return [
+                    'code' => 1,
+                    'message' => $data['err_code_des'],
+                ];
             } else {
                 Yii::error($data, $this->logCategory);
-	            return [
-		            'code' => 1,
-		            'message' => 'fail to communicate with wxpay server',
-	            ];
+                return [
+                    'code' => 1,
+                    'message' => 'fail to communicate with wxpay server',
+                ];
+            }
+        }
+    }    /**
+     * get the pay parameter for the client
+     * @var int $orderId
+     * @var float $amount
+     * @var string $body brief of trade
+     * @var string $ip the client ip to pay
+     * @var string $detail detail of this trade
+     * @var string $tradeType
+     * @return array
+     */
+    public function getQrCode(int $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
+    {
+        $postData = [
+            'appid' => $this->appid,
+            'body' => $body,
+            'mch_id' => $this->mchid,
+            'nonce_str' => Yii::$app->security->generateRandomString(32),
+            'notify_url' => $this->notifyUrl,
+            'out_trade_no' => $orderId,
+            'spbill_create_ip' => $ip,
+            'sign_type' => $this->signType,
+            'total_fee' => $amount,
+            'trade_type' => $tradeType,
+        ];
+
+        $postData['sign'] = $this->getSign($postData);
+
+        $client = new Client();
+        $response = $client->createRequest()
+            ->setMethod('post')
+            ->setFormat(Client::FORMAT_XML)
+            ->setUrl(self::ORDER_URL)
+            ->setData($postData)
+            ->send()->setFormat(Client::FORMAT_XML);;
+        if ($response->isOk) {
+            $data = $response->data;
+            Yii::info($data, $this->logCategory);
+            print_r($data);exit;
+            if ($data['return_code'] === 'SUCCESS') {
+                if ($data['result_code'] === 'SUCCESS') {
+                    return [
+                        'code' => 0,
+                        $data,
+                    ];
+                }
+                return [
+                    'code' => 1,
+                    'message' => $data['err_code_des'],
+                ];
+            } else {
+                Yii::error($data, $this->logCategory);
+                return [
+                    'code' => 1,
+                    'message' => 'fail to communicate with wxpay server',
+                ];
             }
         }
     }
