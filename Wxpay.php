@@ -77,7 +77,6 @@ class Wxpay extends Object
         if ($response->isOk) {
             $data = $response->data;
             Yii::info($data, $this->logCategory);
-            print_r($data);exit;
             if ($data['return_code'] === 'SUCCESS') {
                 if ($data['result_code'] === 'SUCCESS') {
                     return [
@@ -134,7 +133,6 @@ class Wxpay extends Object
         if ($response->isOk) {
             $data = $response->data;
             Yii::info($data, $this->logCategory);
-            print_r($data);exit;
             if ($data['return_code'] === 'SUCCESS') {
                 if ($data['result_code'] === 'SUCCESS') {
                     return [
