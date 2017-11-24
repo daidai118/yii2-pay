@@ -10,7 +10,9 @@
 namespace tlanyan;
 
 use Yii;
+use yii\base\Arrayable;
 use yii\base\Object;
+use yii\helpers\ArrayHelper;
 use yii\httpclient\Client;
 
 class Wxpay extends Object
@@ -39,6 +41,7 @@ class Wxpay extends Object
      * @const the gate way to get prepay id
      */
     const ORDER_URL = 'https://api.mch.weixin.qq.com/pay/unifiedorder';
+    const ORDER_CHECK = 'https://api.mch.weixin.qq.com/pay/orderquery';
 
     /**
      * get the pay parameter for the client
@@ -50,11 +53,12 @@ class Wxpay extends Object
      * @var string $tradeType
      * @return array
      */
-    public function getPayParameter(int $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
+    public function getPayParameter( $orderId,  $amount,  $body,  $ip,  $detail = '',$attach,  $tradeType = 'APP')
     {
         $postData = [
             'appid' => $this->appid,
             'body' => $body,
+            'attach' => $attach,
             'mch_id' => $this->mchid,
             'nonce_str' => Yii::$app->security->generateRandomString(32),
             'notify_url' => $this->notifyUrl,
@@ -79,10 +83,7 @@ class Wxpay extends Object
             Yii::info($data, $this->logCategory);
             if ($data['return_code'] === 'SUCCESS') {
                 if ($data['result_code'] === 'SUCCESS') {
-                    return [
-                        'code' => 0,
-                        $data,
-                    ];
+                    return ArrayHelper::merge(['code' => 0] ,$data);
                 }
                 return [
                     'code' => 1,
@@ -96,17 +97,48 @@ class Wxpay extends Object
                 ];
             }
         }
-    }    /**
-     * get the pay parameter for the client
-     * @var int $orderId
-     * @var float $amount
-     * @var string $body brief of trade
-     * @var string $ip the client ip to pay
-     * @var string $detail detail of this trade
-     * @var string $tradeType
-     * @return array
-     */
-    public function getQrCode(int $orderId, int $amount, string $body, string $ip, string $detail = '', string $tradeType = 'APP')
+    }
+    public function checkOrder(string $orderId)
+    {
+        $postData = [
+            'appid' => $this->appid,
+            'mch_id' => $this->mchid,
+            'nonce_str' => Yii::$app->security->generateRandomString(32),
+            'out_trade_no' => $orderId,
+            'sign_type' => $this->signType,
+        ];
+        $postData['sign'] = $this->getSign($postData);
+
+        $client = new Client();
+        $response = $client->createRequest()
+            ->setMethod('post')
+            ->setFormat(Client::FORMAT_XML)
+            ->setUrl(self::ORDER_CHECK)
+            ->setData($postData)
+            ->send()->setFormat(Client::FORMAT_XML);;
+        if ($response->isOk) {
+            $data = $response->data;
+            Yii::info($data, $this->logCategory);
+            if ($data['return_code'] === 'SUCCESS') {
+                if ($data['result_code'] === 'SUCCESS') {
+                    return ArrayHelper::merge(['code' => 0] ,$data);
+                }
+                return [
+                    'code' => 1,
+                    'message' => $data['err_code_des'],
+                ];
+            } else {
+                Yii::error($data, $this->logCategory);
+                return [
+                    'code' => 1,
+                    'message' => 'fail to communicate with wxpay server',
+                ];
+            }
+        }
+    }
+
+
+    public function getQrCode(string $orderId, int $amount, string $body, string $ip='', string $detail = '', string $tradeType = 'APP')
     {
         $postData = [
             'appid' => $this->appid,
@@ -135,10 +167,7 @@ class Wxpay extends Object
             Yii::info($data, $this->logCategory);
             if ($data['return_code'] === 'SUCCESS') {
                 if ($data['result_code'] === 'SUCCESS') {
-                    return [
-                        'code' => 0,
-                        $data,
-                    ];
+                    return ArrayHelper::merge(['code' => 0] ,$data);
                 }
                 return [
                     'code' => 1,
