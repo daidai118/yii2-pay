@@ -3,7 +3,7 @@
  * ALIPAY API: ssdata.dataservice.risk.rainscore.query request
  *
  * @author auto create
- * @since 1.0, 2017-09-14 11:55:38
+ * @since 1.0, 2017-02-21 17:13:22
  */
 class SsdataDataserviceRiskRainscoreQueryRequest
 {

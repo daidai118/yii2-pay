@@ -118,8 +118,8 @@ class AopClient {
 
 	protected function sign($data, $signType = "RSA") {
 		if($this->checkEmpty($this->rsaPrivateKeyFilePath)){
-			$priKey=$this->rsaPrivateKey;
-			$res = "-----BEGIN RSA PRIVATE KEY-----\n" .
+			 $priKey=$this->rsaPrivateKey;
+            $res = "-----BEGIN RSA PRIVATE KEY-----\n" .
 				wordwrap($priKey, 64, "\n", true) .
 				"\n-----END RSA PRIVATE KEY-----";
 		}else {
@@ -135,7 +135,7 @@ class AopClient {
 			openssl_sign($data, $sign, $res);
 		}
 
-		if(!$this->checkEmpty($this->rsaPrivateKeyFilePath)){
+		if(!$this->checkEmpty($this->rsaPrivateKeyFilePath)){exit;
 			openssl_free_key($res);
 		}
 		$sign = base64_encode($sign);
@@ -304,39 +304,16 @@ class AopClient {
 		foreach ($params as &$value) {
 			$value = $this->characet($value, $params['charset']);
 		}
-        echo $this->http_build_query2($params);
-		echo "\r\n";
+		
 		return http_build_query($params);
 	}
-    function http_build_query2($queryData, $numericPrefix = '', $argSeparator = '&', $keyPrefix = '') {
-        $arr = array();
-        foreach ($queryData as $key => $val) {
-            if ($val === NULL) {
-                continue;
-            }
-            if (!is_array($val) && !is_object($val)) {
-                if (is_bool($val)) {
-                    $val = $val ? 1 : 0;
-                }
-                if ($keyPrefix === '') {
-                    if (is_int($key)) {
-                        $arr[] = $numericPrefix . ($key) . '=' . ($val);
-                    } else {
-                        $arr[] = ($key) . '=' . ($val);
-                    }
-                } else {
-                    $arr[] = ($keyPrefix . '[' . $key . ']') . '=' . ($val);
-                }
-            }
-        }
-        return implode($argSeparator, $arr);
-    }
-    /*
-        页面提交执行方法
-        @param：跳转类接口的request; $httpmethod 提交方式。两个值可选：post、get
-        @return：构建好的、签名后的最终跳转URL（GET）或String形式的form（POST）
-        auther:笙默
-    */
+
+	/*
+		页面提交执行方法
+		@param：跳转类接口的request; $httpmethod 提交方式。两个值可选：post、get
+		@return：构建好的、签名后的最终跳转URL（GET）或String形式的form（POST）
+		auther:笙默
+	*/
 	public function pageExecute($request,$httpmethod = "POST") {
 
 		$this->setupCharsets($request);
@@ -361,7 +338,7 @@ class AopClient {
 		$sysParams["format"] = $this->format;
 		$sysParams["sign_type"] = $this->signType;
 		$sysParams["method"] = $request->getApiMethodName();
-		$sysParams["timestamp"] = date("Y-m-d H:i:s");
+		$sysParams["timestamp"] =  date("Y-m-d H:i:s");
 		$sysParams["alipay_sdk"] = $this->alipaySdkVersion;
 		$sysParams["terminal_type"] = $request->getTerminalType();
 		$sysParams["terminal_info"] = $request->getTerminalInfo();
@@ -446,7 +423,7 @@ class AopClient {
         $sHtml = $sHtml."<input type='submit' value='ok' style='display:none;''></form>";
 		
 		$sHtml = $sHtml."<script>document.forms['alipaysubmit'].submit();</script>";
-		
+
 		return $sHtml;
 	}
 
@@ -668,10 +645,10 @@ class AopClient {
 	 *  公钥是否是读取字符串还是读取文件，是根据初始化传入的值判断的。
 	 **/
 	public function rsaCheckV1($params, $rsaPublicKeyFilePath,$signType='RSA') {
-		$sign = $params['sign'];
-		$params['sign_type'] = null;
-		$params['sign'] = null;
-		return $this->verify($this->getSignContent($params), $sign, $rsaPublicKeyFilePath,$signType);
+			$sign = $params['sign'];
+			$params['sign_type'] = null;
+			$params['sign'] = null;
+			return $this->verify($this->getSignContent($params), $sign, $rsaPublicKeyFilePath,$signType);
 	}
 	public function rsaCheckV2($params, $rsaPublicKeyFilePath, $signType='RSA') {
 		$sign = $params['sign'];

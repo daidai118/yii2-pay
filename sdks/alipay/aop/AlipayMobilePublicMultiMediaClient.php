@@ -67,6 +67,7 @@ class AlipayMobilePublicMultiMediaClient{
 		);
 
 
+
 		//要提交的数据
 		$data_sign = $this -> buildGetUrl( $datas );
 

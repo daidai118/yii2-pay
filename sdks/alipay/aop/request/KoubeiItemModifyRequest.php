@@ -3,7 +3,7 @@
  * ALIPAY API: koubei.item.modify request
  *
  * @author auto create
- * @since 1.0, 2017-08-31 21:06:41
+ * @since 1.0, 2017-04-04 13:39:15
  */
 class KoubeiItemModifyRequest
 {

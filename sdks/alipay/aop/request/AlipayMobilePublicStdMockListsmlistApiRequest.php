@@ -3,7 +3,7 @@
  * ALIPAY API: alipay.mobile.public.std.mock.listsmlist.api request
  *
  * @author auto create
- * @since 1.0, 2017-04-14 20:34:02
+ * @since 1.0, 2017-04-07 20:39:23
  */
 class AlipayMobilePublicStdMockListsmlistApiRequest
 {
